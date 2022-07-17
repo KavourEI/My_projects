@@ -24,9 +24,11 @@ ada_price <- cardano_history %>%
 
 min(as.Date(ada_price$timestamp))
 temp <- ada_price$timestamp
-temp <- as.Date(ada_price$timestamp, format = "%Y %m %d")
-ada_ts <- ts(data = ada_price$price, start = min(temp), frequency = 365)
+min(temp)
 
+temp <- as.Date(ada_price$timestamp, format = "%Y %m %d")
+ada_ts <- ts(data = ada_price$price, start = c(2017,290), frequency = 365)
+ada_ts
 summary(ur.df(ada_ts, type = 'trend')) # <--- Check how to interpret!
 adf.test(ada_ts) # Not a stationary series.
 
@@ -42,6 +44,8 @@ adf.test(l_ada)
 
 dl_ada=diff(l_ada,1)
 adf.test(dl_ada)
+
+plot(dl_ada)
 
 acf(ada_ts, main = "ACF plot of ADA")
 pacf(ada_ts, main = "PACF plot of ADA")
@@ -112,7 +116,7 @@ par(mfrow = c(1,2))
 acf(ts(residuals_ARMA14, freq = 1), 48, main = "ACF of res(ARMA(14,14))")
 pacf(ts(residuals_ARMA14, freq = 1), 48, main = "PACF of res(ARMA(14,14))")
 
-future <- predict(arma14fit, 4)
+future <- predict(arma14fit, 3)
 future$pred
 
 UL <- future$pred + future$se
@@ -121,13 +125,6 @@ LL <-  future$pred - future$se
 par(mfrow = c(1,1))
 ts.plot(dl_ada, future$pred)
 lines(future$pred, col="red", type="o")
-lines(UL, col="blue", lty="dashed") 
-lines(LL, col="blue", lty="dashed")
-
-# plot of forecasts with 1 s.e. 
-minx = min(dlj,LL); maxx = max(dlj,UL) 
-ts.plot(dlj, forecast$pred, xlim=c(1960,1982), ylim=c(minx,maxx)) 
-lines(forecast$pred, col="red", type="o") 
 lines(UL, col="blue", lty="dashed") 
 lines(LL, col="blue", lty="dashed")
 
